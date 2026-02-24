@@ -1,4 +1,4 @@
-# Miner Scanner GUI
+# Pi Miner Scanner
 
 A Pygame GUI for Raspberry Pi that scans a LAN subnet for ASIC miners (Whatsminer, Antminer, etc.) and displays all miner data on a 3.5" TFT LCD 480x320 SPI touchscreen. Supports touch pen interaction.
 
