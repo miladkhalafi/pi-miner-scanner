@@ -11,9 +11,10 @@ from datetime import datetime
 
 import pygame
 
-from config import SCREEN_WIDTH, SCREEN_HEIGHT, SUBNET
+from config import SCREEN_WIDTH, SCREEN_HEIGHT, SUBNET, WEB_PORT
 from scanner import run_scan
 from gui.screens import HomeScreen, MinerListScreen, DetailScreen
+from web.server import SharedState, run_server
 
 
 def _setup_display_for_spi_tft() -> None:
@@ -36,19 +37,34 @@ def main() -> None:
 
     miners: list[dict] = []
     scan_thread: threading.Thread | None = None
+    shared_state = SharedState()
 
     def do_scan() -> None:
         nonlocal miners, scan_thread
+        shared_state.set_scanning(True)
         home.set_scanning(True)
         try:
             miners = run_scan(SUBNET)
+            shared_state.set_miners(miners)
         except Exception:
             miners = []
+            shared_state.set_miners([])
         finally:
+            shared_state.set_scanning(False)
+            shared_state.set_last_scan(datetime.now().strftime("%H:%M:%S"))
             home.set_scanning(False)
             home.set_last_scan(datetime.now().strftime("%H:%M:%S"))
             home.set_miners(miners)
             list_screen.set_miners(miners)
+
+    # Start web server in background
+    web_thread = threading.Thread(
+        target=run_server,
+        args=(shared_state,),
+        kwargs={"host": "0.0.0.0", "port": WEB_PORT},
+        daemon=True,
+    )
+    web_thread.start()
 
     home = HomeScreen(on_scan=lambda: None)
     list_screen = MinerListScreen([], on_select=lambda d: None, on_back=lambda: None)
@@ -60,6 +76,14 @@ def main() -> None:
             return
         scan_thread = threading.Thread(target=do_scan, daemon=True)
         scan_thread.start()
+
+    def maybe_scan_from_web() -> None:
+        """Trigger scan if web server requested one."""
+        nonlocal scan_thread
+        if shared_state.consume_scan_request():
+            if not (scan_thread and scan_thread.is_alive()):
+                scan_thread = threading.Thread(target=do_scan, daemon=True)
+                scan_thread.start()
 
     def on_select_miner(data: dict) -> None:
         nonlocal detail_screen
@@ -79,6 +103,7 @@ def main() -> None:
     running = True
 
     while running:
+        maybe_scan_from_web()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False

@@ -30,3 +30,6 @@ SCREEN_HEIGHT = 320
 
 # Minimum touch target size (px) for touch pen
 MIN_TOUCH_TARGET = 44
+
+# Web server port for scan results (default 80; port 80 requires root or setcap)
+WEB_PORT = int(os.environ.get("MINER_SCANNER_WEB_PORT", "80"))

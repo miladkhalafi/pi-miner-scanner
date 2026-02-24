@@ -10,6 +10,7 @@ A Pygame GUI for Raspberry Pi that scans a LAN subnet for ASIC miners (Whatsmine
 - Display all miner data: IP, hostname, model, hashrate, wattage, temp, fans, workers, pools, errors
 - Touch-friendly UI (44x44 px minimum targets) for resistive touch + touch pen
 - Scrollable miner list and detail view
+- Web interface on port 80 — view scan results from any device on the LAN
 
 ## Requirements
 
@@ -99,12 +100,22 @@ python3 main.py
 
 Runs in a normal window for testing.
 
+## Web Interface
+
+The app runs an HTTP server alongside the GUI. View scan results from any device on your network:
+
+- **URL**: `http://<pi-ip>/` or `http://<pi-ip>:8080/` (e.g. `http://192.168.1.42:8080/`)
+- **Port**: 80 by default; the curl installer uses port 8080 (port 80 requires root)
+
+The web page shows the miner table (IP, hostname, model, hashrate, wattage, temp, workers), a "Scan" button to trigger a rescan, expandable detail rows, and auto-refresh every 30 seconds. API: `GET /api/miners` returns JSON.
+
 ## Configuration
 
 | Environment Variable | Default | Description |
 |---------------------|---------|-------------|
 | `MINER_SCANNER_SUBNET` | Auto-detected `/24` | IP range to scan (e.g., `192.168.1.0/24`) |
 | `MINER_SCANNER_WHATSMINER_PASSWORD` | `admin` | Whatsminer API password |
+| `MINER_SCANNER_WEB_PORT` | `80` | Web server port for scan results |
 
 ## Wiring (typical 3.5" SPI TFT)
 

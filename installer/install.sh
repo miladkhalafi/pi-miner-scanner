@@ -79,6 +79,7 @@ Type=simple
 Environment=SDL_FBDEV=/dev/fb0
 Environment=SDL_VIDEODRIVER=fbcon
 Environment=DISPLAY=:0
+Environment=MINER_SCANNER_WEB_PORT=8080
 ExecStart=/usr/bin/python3 $INSTALL_DIR/main.py
 Restart=on-failure
 RestartSec=10
