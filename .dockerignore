@@ -1,0 +1,11 @@
+# Reduce Docker build context
+.git
+__pycache__
+*.pyc
+.env
+*.md
+gui/
+config.py
+main.py
+scanner.py
+requirements.txt

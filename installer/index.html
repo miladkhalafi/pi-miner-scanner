@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Miner Scanner — Install</title>
+  <style>
+    :root {
+      --bg: #0f0f12;
+      --surface: #1a1a20;
+      --border: #2a2a33;
+      --text: #e8e8ed;
+      --muted: #888899;
+      --accent: #22c55e;
+      --accent-hover: #16a34a;
+      --code-bg: #25252d;
+      --font: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      line-height: 1.6;
+    }
+    main {
+      max-width: 640px;
+      width: 100%;
+    }
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 0.2em 0.5em;
+      background: var(--accent);
+      color: var(--bg);
+      border-radius: 4px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+    .install-box {
+      position: relative;
+      background: var(--code-bg);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-family: var(--font);
+      font-size: 0.9rem;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+    }
+    .install-box code {
+      color: #a5d6ff;
+      word-break: break-all;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.8rem;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .copy-btn:hover {
+      background: var(--accent-hover);
+    }
+    .copy-btn.copied {
+      background: #16a34a;
+    }
+    .steps {
+      list-style: none;
+    }
+    .steps li {
+      padding: 0.5rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+    .steps li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: bold;
+    }
+    .note {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 1rem;
+    }
+    .note strong { color: var(--text); }
+    footer {
+      margin-top: 2rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Miner Scanner <span class="badge">Install</span></h1>
+    <p class="subtitle">ASIC miner scanner for Raspberry Pi with 3.5" TFT display. One command to install and run on boot.</p>
+
+    <div class="card">
+      <h2>Install (Raspberry Pi / Linux)</h2>
+      <div class="install-box">
+        <button class="copy-btn" onclick="copyInstall()">Copy</button>
+        <code id="install-cmd">curl -sSL https://INSTALL_URL/install.sh | sudo bash</code>
+      </div>
+      <p class="note">
+        <strong>Note:</strong> Replace <code>INSTALL_URL</code> with this server's URL or use the raw GitHub link below.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>From GitHub</h2>
+      <div class="install-box">
+        <button class="copy-btn" onclick="copyGitHub()">Copy</button>
+        <code id="github-cmd">curl -sSL https://raw.githubusercontent.com/miladkhalafi/pi-miner-scanner/main/installer/install.sh | sudo bash</code>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>What this does</h2>
+      <ul class="steps">
+        <li>Installs Python 3, pip, and git</li>
+        <li>Clones the miner-scanner repository</li>
+        <li>Installs Python dependencies (pygame, pyasic)</li>
+        <li>Creates a systemd service</li>
+        <li>Enables auto-start on every reboot</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Requirements</h2>
+      <ul class="steps">
+        <li>Raspberry Pi with 3.5" TFT LCD 480x320 SPI display</li>
+        <li>SPI enabled (raspi-config → Interface Options → SPI)</li>
+        <li>Display driver installed (e.g. LCD-show)</li>
+      </ul>
+    </div>
+
+    <footer>
+      <a href="https://github.com/miladkhalafi/pi-miner-scanner">GitHub</a> · Miner Scanner GUI
+    </footer>
+  </main>
+
+  <script>
+    const baseUrl = window.location.origin;
+    const installCmd = `curl -sSL ${baseUrl}/install.sh | sudo bash`;
+    document.getElementById('install-cmd').textContent = installCmd;
+
+    function copy(text, btnId) {
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector(btnId === 'install' ? '[onclick="copyInstall()"]' : '[onclick="copyGitHub()"]');
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+    function copyInstall() { copy(document.getElementById('install-cmd').textContent, 'install'); }
+    function copyGitHub() { copy(document.getElementById('github-cmd').textContent, 'github'); }
+  </script>
+</body>
+</html>
